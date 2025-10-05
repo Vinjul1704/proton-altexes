@@ -20,12 +20,11 @@ fn main() -> eframe::Result {
 
     // Read alternative EXEs from config
     // Vector of path as String, and bool to indicate if the file exists
-    let mut altexes: Vec<(String, bool)> = Vec::new();
+    let mut altexes: Vec<String> = Vec::new();
     if config_path.exists() {
         for (_line_index, line) in read_to_string(config_path).unwrap().lines().enumerate() {
             if !line.is_empty() {
-                let exists = Path::new(&line).exists();
-                altexes.push((line.to_string(), exists));
+                altexes.push(line.to_string());
             }
         }
     }
@@ -62,20 +61,20 @@ fn main() -> eframe::Result {
                 }
                 if ui.button("Add EXE").clicked() && let Some(path) = rfd::FileDialog::new().pick_file() {
                     let picked_path = Some(path.display().to_string()).expect("Error picking path");
-                    let _ = (&mut altexes).push((picked_path, true));
+                    let _ = (&mut altexes).push(picked_path);
                     write_config(Path::new(&config_path_str), altexes.clone());
                 }
             });
             ui.separator();
             for (altexe_index, altexe) in altexes.clone().into_iter().enumerate() {
                 ui.horizontal(|ui| {
-                    if altexe.clone().1 {
+                    if Path::new(&altexe.clone()).exists() {
                         if ui.button("Run").clicked() {
                             // Get some args and paths
                             let launch_command = args[1].clone();
                             let mut launch_args: Vec<String> = Vec::new();
 
-                            let exe_path = altexe.clone().0;
+                            let exe_path = altexe.clone();
                             let exe_dir = Path::new(&exe_path).parent().expect("Couldn't get EXE dir");
 
                             let orig_exe_path = &args.clone()[exe_index];
@@ -120,7 +119,7 @@ fn main() -> eframe::Result {
                         (&mut altexes).remove(altexe_index);
                         write_config(Path::new(&config_path_str), altexes.clone());
                     }
-                    ui.label(altexe.clone().0);
+                    ui.label(altexe.clone());
                 });
             }
         });
@@ -128,11 +127,11 @@ fn main() -> eframe::Result {
 }
 
 
-fn write_config(config_path: &Path, altexes: Vec<(String, bool)>) {
+fn write_config(config_path: &Path, altexes: Vec<String>) {
     let mut config_content = String::new();
 
     for altexe in altexes {
-        config_content.push_str(altexe.0.as_str());
+        config_content.push_str(altexe.as_str());
         config_content.push('\n');
     }
 
