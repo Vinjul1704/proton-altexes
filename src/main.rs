@@ -9,7 +9,20 @@ use eframe::egui;
 
 fn main() -> eframe::Result {
     
-    let args: Vec<String> = env::args().collect();
+    let mut args: Vec<String> = env::args().collect();
+
+    // Pretty bad way of dealing with this, but whatever
+    let keep_open: bool = if args.len() > 2 {
+        if args[1].to_lowercase() == "--keep-open" || args[1].to_lowercase() == "-keep-open" {
+            args.remove(1);
+            true
+        } else {
+            false
+        }
+    } else {
+        false
+    };
+
 
     // Argument after "waitforexeandrun" is the EXE path
     let exe_index = args.clone().into_iter().position(|arg| arg == "waitforexitandrun").expect("Error parsing %command%") + 1;
@@ -57,7 +70,9 @@ fn main() -> eframe::Result {
                     Command::new(launch_command).args(launch_args).process_group(0).spawn().expect("Failed to run command.");
 
                     // Close GUI
-                    ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                    if !keep_open {
+                        ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                    }
                 }
                 if ui.button("Add EXE").clicked() && let Some(path) = rfd::FileDialog::new().pick_file() {
                     let picked_path = Some(path.display().to_string()).expect("Error picking path");
@@ -108,7 +123,9 @@ fn main() -> eframe::Result {
                             Command::new(launch_command).args(launch_args).current_dir(exe_dir).process_group(0).spawn().expect("Failed to run command.");
 
                             // Close GUI
-                            ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                            if !keep_open {
+                                ui.ctx().send_viewport_cmd(egui::ViewportCommand::Close);
+                            }
                         }
                     }
                     else
