@@ -12,5 +12,5 @@ After that, simply launch the game through Steam and you will see a GUI pop up. 
 By default, `proton-altexes` will close after you run an EXE. If you want to keep it open, you can use the `--keep-open` argument like this:
 
 ```
-/path/to/proton-altexes %command%
+/path/to/proton-altexes --keep-open %command%
 ```
