@@ -8,3 +8,9 @@ To use it, compile it or download the latest release, then set the launch option
 ```
 
 After that, simply launch the game through Steam and you will see a GUI pop up. In there, you can add and remove EXEs to the list to run, as well as run the default EXE. Alternative EXEs are stored in a config file next to the default EXE.
+
+By default, `proton-altexes` will close after you run an EXE. If you want to keep it open, you can use the `--keep-open` argument like this:
+
+```
+/path/to/proton-altexes %command%
+```
