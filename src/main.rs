@@ -63,7 +63,12 @@ fn main() -> eframe::Result {
                             continue;
                         }
 
-                        launch_args.push(arg);
+                        if keep_open && arg == "waitforexitandrun" {
+                            launch_args.push("run".to_string());
+                        }
+                        else {
+                            launch_args.push(arg);
+                        }
                     }
 
                     // Run command
@@ -114,6 +119,8 @@ fn main() -> eframe::Result {
 
                                 if arg_index == exe_index {
                                     launch_args.push(exe_path.clone());
+                                } else if keep_open && arg == "waitforexitandrun" {
+                                    launch_args.push("run".to_string());
                                 } else {
                                     launch_args.push(arg);
                                 }
